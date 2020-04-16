@@ -24,6 +24,9 @@ cd path/to/docker-compose.yml
 docker-compose down
 docker volume rm dmd-airflow_elasticsearch-data dmd-airflow_grafana-data dmd-airflow_postgres-data
 ```
+To provide Postgres usage instead of sqlalchemy , need to modify *airflow.cfg* with
+
+**sql_alchemy_conn = postgres://airflow:airflow@postgres:5432/airflow**
 
 ### Endpoints
 Airflow Webserver: [127.0.0.1:8080](http://127.0.0.1:8080) 
