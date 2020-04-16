@@ -1,0 +1,125 @@
+version: '2.1'
+services:
+
+    postgres:
+        image: postgres:9.6
+        container_name: postgres
+        environment:
+            - POSTGRES_USER=${PG_AIRFLOW_USER}
+            - POSTGRES_PASSWORD=${PG_AIRFLOW_PASSWD}
+            - POSTGRES_DB=${PG_AIRFLOW_DB}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+    initdb:
+       image: puckel/docker-airflow:${AIRFLOW_VERSION}
+       entrypoint: airflow initdb
+       container_name: initdb
+       restart: on-failure
+       depends_on:
+            - postgres
+       environment:
+            - EXECUTOR=Celery
+            - FERNET_KEY=${AIRFLOW_FERNET_KEY}
+            - AIRFLOW__WEBSERVER__RBAC=true
+            - LOAD_EX=n
+            - POSTGRES_USER=${PG_AIRFLOW_USER}
+            - POSTGRES_PASSWORD=${PG_AIRFLOW_PASSWD}
+            - POSTGRES_DB=${PG_AIRFLOW_DB}
+
+    createuser:
+       image: puckel/docker-airflow:${AIRFLOW_VERSION}
+       entrypoint: airflow create_user -r Admin -u ${DMD_USER_USERNAME} -e ${DMD_USER_EMAIL} -f ${DMD_USER_USERNAME} -l ${DMD_USER_USERNAME} -p ${DMD_USER_PASSWD}
+       container_name: createuser
+       restart: on-failure
+       depends_on:
+            - initdb
+       environment:
+            - EXECUTOR=Celery
+            - FERNET_KEY=${AIRFLOW_FERNET_KEY}
+            - AIRFLOW__WEBSERVER__RBAC=true
+            - LOAD_EX=n
+            - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgres://${PG_AIRFLOW_USER}:${PG_AIRFLOW_PASSWD}@postgres:5432/${PG_AIRFLOW_DB}
+       volumes:
+        - ./requirements.txt:/requirements.txt
+        - ./webserver_config.py:/usr/local/airflow/webserver_config.py
+
+    webserver:
+        image: puckel/docker-airflow:${AIRFLOW_VERSION}
+        container_name: webserver
+        hostname: webserver
+        restart: always
+        depends_on:
+            - initdb
+        environment:
+            - LOAD_EX=y
+            - FERNET_KEY=${AIRFLOW_FERNET_KEY}
+            - AIRFLOW__WEBSERVER__RBAC=true
+            - EXECUTOR=Celery
+            - POSTGRES_USER=${PG_AIRFLOW_USER}
+            - POSTGRES_PASSWORD=${PG_AIRFLOW_PASSWD}
+            - POSTGRES_DB=${PG_AIRFLOW_DB}
+        volumes:
+            - ./airflow/dags:/usr/local/airflow/dags
+            - ./requirements.txt:/requirements.txt
+        ports:
+            - "8080:8080"
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+
+    flower:
+        image: puckel/docker-airflow:${AIRFLOW_VERSION}
+        container_name: flower
+        hostname: flower
+        restart: always
+        environment:
+            - EXECUTOR=Celery
+        ports:
+            - "5555:5555"
+        command: flower --basic_auth=${DMD_USER_USERNAME}:${DMD_USER_PASSWD}
+
+    scheduler:
+        image: puckel/docker-airflow:${AIRFLOW_VERSION}
+        container_name: scheduler
+        restart: always
+        depends_on:
+            - webserver
+        volumes:
+            - ./airflow/dags:/usr/local/airflow/dags
+            - ./requirements.txt:/requirements.txt
+        environment:
+            - LOAD_EX=y
+            - FERNET_KEY=${AIRFLOW_FERNET_KEY}
+            - AIRFLOW__WEBSERVER__RBAC=true
+            - EXECUTOR=Celery
+            - POSTGRES_USER=${PG_AIRFLOW_USER}
+            - POSTGRES_PASSWORD=${PG_AIRFLOW_PASSWD}
+            - POSTGRES_DB=${PG_AIRFLOW_DB}
+        command: scheduler
+
+    worker:
+        image: puckel/docker-airflow:${AIRFLOW_VERSION}
+        container_name: worker
+        hostname: worker
+        restart: always
+        depends_on:
+            - scheduler
+        volumes:
+            - ./airflow/dags:/usr/local/airflow/dags
+            - ./requirements.txt:/requirements.txt
+        environment:
+            - FERNET_KEY=${AIRFLOW_FERNET_KEY}
+            - EXECUTOR=Celery
+            - POSTGRES_USER=${PG_AIRFLOW_USER}
+            - POSTGRES_PASSWORD=${PG_AIRFLOW_PASSWD}
+            - POSTGRES_DB=${PG_AIRFLOW_DB}
+        command: worker
+
+volumes:
+  postgres-data:
+    driver: local
+
