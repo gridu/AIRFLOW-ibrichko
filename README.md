@@ -22,7 +22,7 @@ docker-compose up -d
 ```
 cd path/to/docker-compose.yml
 docker-compose down
-docker volume rm dmd-airflow_elasticsearch-data dmd-airflow_grafana-data dmd-airflow_postgres-data
+docker volume rm dmd-airflow_postgres-data
 ```
 To provide Postgres usage instead of sqlalchemy , need to modify *airflow.cfg* with
 
