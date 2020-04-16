@@ -1,0 +1,12 @@
+[2020-01-20 17:11:09,796] {taskinstance.py:655} INFO - Dependencies all met for <TaskInstance: example_bash_operator.run_this_last 2015-01-02T00:00:00+00:00 [queued]>
+[2020-01-20 17:11:09,811] {taskinstance.py:655} INFO - Dependencies all met for <TaskInstance: example_bash_operator.run_this_last 2015-01-02T00:00:00+00:00 [queued]>
+[2020-01-20 17:11:09,812] {taskinstance.py:866} INFO - 
+--------------------------------------------------------------------------------
+[2020-01-20 17:11:09,812] {taskinstance.py:867} INFO - Starting attempt 1 of 1
+[2020-01-20 17:11:09,812] {taskinstance.py:868} INFO - 
+--------------------------------------------------------------------------------
+[2020-01-20 17:11:09,841] {taskinstance.py:887} INFO - Executing <Task(DummyOperator): run_this_last> on 2015-01-02T00:00:00+00:00
+[2020-01-20 17:11:09,850] {standard_task_runner.py:52} INFO - Started process 30267 to run task
+[2020-01-20 17:11:09,892] {logging_mixin.py:112} INFO - [2020-01-20 17:11:09,891] {dagbag.py:403} INFO - Filling up the DagBag from /home/brig/misc/env/lib/python3.6/site-packages/airflow/example_dags/example_bash_operator.py
+[2020-01-20 17:11:13,574] {logging_mixin.py:112} INFO - Running %s on host %s <TaskInstance: example_bash_operator.run_this_last 2015-01-02T00:00:00+00:00 [running]> brig
+[2020-01-20 17:11:22,777] {logging_mixin.py:112} INFO - [2020-01-20 17:11:22,777] {local_task_job.py:103} INFO - Task exited with return code 0
