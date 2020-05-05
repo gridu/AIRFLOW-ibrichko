@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 
 class PostgreSQLCountRows(BaseOperator):
     @apply_defaults
-    def __init__(self, table_name, *args, **kwargs):
-        self.table_name = table_name
+    def __init__(self, table, *args, **kwargs):
+        self.table = table
         self.hook = PostgresHook()
         super(PostgreSQLCountRows, self).__init__(*args, **kwargs)
 

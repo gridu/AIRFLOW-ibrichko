@@ -4,7 +4,7 @@ from datetime import datetime
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.python_operator import PythonOperator, BranchPythonOperator
-#rom airflow.operators.postgres_custom import PostgreSQLCountRowsOperator
+from airflow.operators.postgres_custom import PostgreSQLCountRows
 from airflow.hooks.postgres_hook import PostgresHook
 from uuid import uuid4
 from time import time
@@ -99,8 +99,8 @@ def create_dag(dag_id, start_date, table, database, schedule_interval=None):
 
 config = {
    'brig_1': {'schedule_interval':"@hourly", "start_date": datetime(2020, 3, 30),"table_name": "table_brig_1"},
-   'brig_2': {'schedule_interval':"*/15 * * * ", "start_date": datetime(2020, 3, 30),"table_name": "table_brig_2"},
-   'brig_3':{'schedule_interval': "*/10 * * * ", "start_date": datetime(2020, 3, 30),"table_name": "table_brig_3"}}
+   'brig_2': {'schedule_interval':"*/15 * * * *", "start_date": datetime(2020, 3, 30),"table_name": "table_brig_2"},
+   'brig_3':{'schedule_interval': "*/10 * * * *", "start_date": datetime(2020, 3, 30),"table_name": "table_brig_3"}}
 
 
 
