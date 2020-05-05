@@ -1,0 +1,3 @@
+flask-bcrypt
+apache-airflow[crypto]
+airflow-exporter==1.3.0
