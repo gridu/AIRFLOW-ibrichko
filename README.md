@@ -28,6 +28,7 @@ To provide Postgres usage instead of sqlalchemy , need to modify *airflow.cfg* w
 
 **sql_alchemy_conn = postgres://airflow:airflow@postgres:5432/airflow**
 
+at worker and webserver nodes`
 ### Endpoints
 Airflow Webserver: [127.0.0.1:8080](http://127.0.0.1:8080) 
 
